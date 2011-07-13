@@ -1,0 +1,34 @@
+#!/bin/bash
+
+BASE_DIR="$PWD"
+
+case "$1" in
+	clean)
+		if [ `basename $PWD` != "build_dir" ]; then
+			pushd build_dir
+		fi
+		make clean
+		rm -rf ./*
+		;;
+	deploy)
+		if [ `basename $PWD` != "build_dir" ]; then
+			pushd build_dir
+		fi
+		`cp $PWD/modules/riak_pbc.so $2`
+		;;
+	*)
+		cp config.m4 build_dir
+		cp *.h build_dir
+		cp *.c build_dir
+		if [ `basename $PWD` != "build_dir" ]; then
+			pushd build_dir
+		fi
+		phpize
+		./configure
+		make
+		make test
+		make install
+		;;
+esac
+
+cd "$BASE_DIR"
